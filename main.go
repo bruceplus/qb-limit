@@ -25,11 +25,13 @@ import (
 
 // Config 配置文件结构体
 type Config struct {
-	QBittorrentURL      string `json:"qbittorrent_url"`       // WebUI地址
-	Username            string `json:"username"`              // 用户名
-	Password            string `json:"password"`              // 密码
-	TotalBandwidth      int64  `json:"total_bandwidth"`       // 总带宽(字节)
+	QBittorrentURL string `json:"qbittorrent_url"` // WebUI地址
+	Username       string `json:"username"`        // 用户名
+	Password       string `json:"password"`        // 密码
+	TotalBandwidth int64  `json:"total_bandwidth"` // 总带宽(字节)
+
 	Threshold           int64  `json:"threshold"`             // 流量阈值(字节)
+	RateLimitOffset     int64  `json:"rate_limit_offset  "`   // 限速偏移量(字节)
 	SamplesPerPeriod    int    `json:"samples_per_period"`    // 采样次数
 	CheckInterval       string `json:"check_interval"`        // 检查间隔
 	LimitAdjustInterval string `json:"limit_adjust_interval"` // 限速调整间隔
@@ -56,6 +58,7 @@ var (
 		LimitAdjustInterval: "@every 30s",
 		LogPath:             "qbittorrent_limit.log",
 		MonitorProcess:      "Lucky", // 默认监控Lucky进程
+		RateLimitOffset:     0,       // 限速偏移量(字节)
 	}
 )
 
@@ -114,6 +117,7 @@ func loadConfig() {
 	setDefaultStr(&appConfig.Password, defaultCfg.Password, "密码")
 	setDefaultStr(&appConfig.MonitorProcess, defaultCfg.MonitorProcess, "监控进程名")
 	setDefaultInt(&appConfig.TotalBandwidth, defaultCfg.TotalBandwidth, "总带宽")
+	setDefaultInt(&appConfig.RateLimitOffset, defaultCfg.RateLimitOffset, "限速偏移量")
 	setDefaultInt(&appConfig.Threshold, defaultCfg.Threshold, "流量阈值")
 	setDefaultStr(&appConfig.CheckInterval, defaultCfg.CheckInterval, "检查间隔")
 	setDefaultStr(&appConfig.LimitAdjustInterval, defaultCfg.LimitAdjustInterval, "限速间隔")
@@ -241,7 +245,7 @@ func adjustSpeedLimit(currentMax int64) {
 
 	var newLimit int64
 	if currentMax > appConfig.Threshold {
-		newLimit = (appConfig.TotalBandwidth - currentMax) / 8
+		newLimit = (appConfig.TotalBandwidth-currentMax)/8 - appConfig.RateLimitOffset
 		if newLimit < 0 {
 			newLimit = 0
 		}
