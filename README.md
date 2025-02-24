@@ -1,5 +1,3 @@
-## 【置顶】 厚脸皮求个人人人药，预注册id:bruceplus 邮箱：bruceplus@qq.com
-
 # QBittorrent 智能限速控制器使用文档
 
 ## 简介
@@ -258,3 +256,4 @@ Created symlink /etc/systemd/system/multi-user.target.wants/speed-limit.service 
 通过正确配置和使用该程序，可以更好地优化您的家庭网络，确保在下载和日常使用之间取得平衡！
 
 "# qb-limit"  
+"# qb-limit" 
